@@ -1,0 +1,266 @@
+/* somach.css: the somach signal language, one stylesheet for every surface.
+   Spec: /Users/carl/Downloads/carl/DESIGN_SYSTEM.md (read it first; this file implements it).
+   Source of the look: https://somach.life hero, repo /Users/carl/Downloads/carl/md-somach-inc/website.
+   Fonts resolve relative to this file (fonts/). For a standalone page run
+   `python3 /Users/carl/CODELocalProjects/lifeos/design/kit.py inline page.html`, which inlines
+   this file with the fonts as data: URIs. Served apps copy fonts/ and keep the urls same-origin. */
+
+/* ---------- Faces (OFL, licences in fonts/) ---------- */
+@font-face { font-family: "Geist Pixel Circle"; src: url("fonts/GeistPixel-Circle.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist Pixel Square"; src: url("fonts/GeistPixel-Square.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("fonts/Inter-latin-var.woff2") format("woff2");
+  font-weight: 100 900; font-style: normal; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "JetBrains Mono"; src: url("fonts/JetBrainsMono-latin-var.woff2") format("woff2");
+  font-weight: 100 800; font-style: normal; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+/* ---------- Tokens (contrast is on --void) ---------- */
+:root {
+  color-scheme: dark;
+  --void: #07070a;                          /* page, canvas clear, theme-color */
+  --paper: #f2f6ff;                         /* 18.59:1 headlines, titles, primary fill */
+  --paper-soft: #a8b4c8;                    /*  9.61:1 body, lede, ok status; dimmest text over a canvas */
+  --paper-mute: #737f93;                    /*  4.97:1 meta, eyebrows, index, placeholder, dates in tools */
+  --glow: #cfe2ff;                          /* 15.31:1 THE accent: live, hover, focus, selected, wordmark period */
+  --fail: #f0b8b0;                          /* 11.68:1 act now */
+  --warn: #dbc895;                          /* 12.17:1 act soon */
+  --hair: rgba(180, 200, 230, .14);         /*  1.26:1 decorative rules only */
+  --line: rgba(180, 200, 230, .28);         /*  1.84:1 table header rule, blockquote rule (decorative) */
+  --line-control: #5d6878;                  /*  3.56:1 input and ghost-button borders */
+  --line-focus: rgba(207, 226, 255, .55);   /*  5.00:1 focused input border */
+  --tint-focus: rgba(255, 255, 255, .04);   /* focused input fill; placeholder stays 4.65:1 */
+  --selection: rgba(190, 215, 255, .24);
+
+  --pixel: "Geist Pixel Circle", "JetBrains Mono", ui-monospace, monospace;    /* 20px and up only */
+  --pixel-sm: "Geist Pixel Square", "JetBrains Mono", ui-monospace, monospace; /* 11 to 19px */
+  --sans: "Inter", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --max: 1200px;
+  --gutter: clamp(28px, 12vw, 210px);       /* landing and reading: the zoomed-out look */
+}
+@media (max-width: 860px) { :root { --gutter: clamp(20px, 6vw, 32px); } }
+.tool { --gutter: clamp(16px, 4vw, 48px); }  /* dashboards spend width on data */
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--void); font-synthesis: none; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--void); color: var(--paper-soft);
+  font: 400 .85rem/1.7 var(--sans); -webkit-font-smoothing: antialiased; }
+.tool { font-size: 14px; line-height: 1.5; }
+h1, h2, h3, h4, h5, h6, p, ul, ol, figure, blockquote { margin: 0; }
+p { text-wrap: pretty; }
+em, i, cite { font-style: normal; color: var(--paper); }      /* no italic face is loaded */
+strong, b { font-weight: 600; color: var(--paper); }
+code, kbd, samp, pre { font-family: var(--mono); font-variant-ligatures: none; }
+.num, .tabular { font-variant-numeric: tabular-nums; }
+a { color: var(--paper); text-decoration: underline 1px var(--paper-mute); text-underline-offset: 3px; }
+a:hover { color: var(--glow); text-decoration-color: var(--glow); }
+hr { border: 0; border-top: 1px solid var(--hair); margin: 0; }
+:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }   /* never a radius */
+::selection { background: var(--selection); color: #fff; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* ---------- Type roles ---------- */
+.display-1, .display-2, .verdict, .numeral, .prose h1 {
+  font-family: var(--pixel); font-weight: 400; letter-spacing: .01em; color: var(--paper); text-wrap: balance; hyphens: none; }
+.display-1 { font-size: clamp(1.5rem, 3.4vw, 2.6rem); line-height: 1.1; max-width: 14em; }
+.display-2 { font-size: clamp(1.25rem, 2.4vw, 1.9rem); line-height: 1.15; max-width: 18em; }
+.numeral { font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1; letter-spacing: 0; }
+.px { font-family: var(--pixel-sm); font-weight: 400; letter-spacing: .04em; }    /* 11 to 19px labels */
+.wordmark { font: 400 14px/1 var(--pixel-sm); letter-spacing: .02em; color: var(--paper); text-decoration: none; }
+.wordmark i { color: var(--glow); }
+.lede { font-size: clamp(.82rem, 1vw, .92rem); line-height: 1.62; color: var(--paper-soft); max-width: 32em; }
+.title { font: 600 1rem/1.3 var(--sans); letter-spacing: -.02em; color: var(--paper); }
+.eyebrow { font: 500 11px/16px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--paper-mute); }
+.index { font: 400 11px/16px var(--mono); letter-spacing: .2em; color: var(--paper-mute); }
+.meta { font: 400 11px/16px var(--mono); letter-spacing: .04em; color: var(--paper-mute); }
+
+/* ---------- Controls: hard corners, 44px, on void ---------- */
+input, button, select, textarea { font: inherit; color: inherit; border-radius: 0; }
+.label { display: block; margin-bottom: 8px; font: 500 11px/16px var(--mono); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--paper-mute); }
+.field { min-height: 44px; padding: 11px 13px; font: 400 12px/1.6 var(--mono); letter-spacing: .02em;
+  color: var(--paper); background: transparent; border: 1px solid var(--line-control); outline: none;
+  transition: border-color .18s ease, background-color .18s ease; }
+.field::placeholder { color: var(--paper-mute); opacity: 1; }
+.field:focus-visible { border-color: var(--line-focus); background: var(--tint-focus); outline: 2px solid var(--glow); outline-offset: 3px; }
+.field-error { margin-top: 8px; font: 400 13px/1.5 var(--sans); color: var(--fail); }
+.btn { min-height: 44px; padding: 0 20px; font: 400 12px/1 var(--pixel-sm); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--void); background: var(--paper); border: 1px solid var(--paper);
+  cursor: pointer; transition: background-color .18s ease, color .18s ease; }
+.btn:hover:not(:disabled) { background: transparent; color: var(--paper); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn--ghost { color: var(--paper); background: transparent; border-color: var(--line-control); }
+.btn--ghost:hover:not(:disabled) { border-color: var(--paper); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.row .field { flex: 1 1 12rem; min-width: 0; }
+@media (max-width: 860px), (pointer: coarse) { .field { font-size: 16px; } }   /* iOS zooms below 16px */
+@media (max-width: 860px) { .row .field, .row .btn { flex: 1 1 100%; } }
+
+/* ---------- Page frame ---------- */
+.page { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter) 64px; }
+.page.flush { padding-bottom: 0; }
+.section { padding: clamp(64px, 8vw, 104px) 0; border-top: 1px solid var(--hair); }
+.measure { max-width: 32em; }   /* about 66 characters of Inter; left-aligned, never centred */
+.measure > p + p { margin-top: 18px; }
+
+/* ---------- Landing hero (somach.life) ---------- */
+.signal-hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
+.signal-field { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block;
+  /* The scrim as a mask on the dots, not a void layer over void (that layer bands). */
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,.04) 0%, rgba(0,0,0,.12) 30%, rgba(0,0,0,.8) 48%, #000 58%),
+                      linear-gradient(100deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,.7) 34%, #000 60%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to top, rgba(0,0,0,.04) 0%, rgba(0,0,0,.12) 30%, rgba(0,0,0,.8) 48%, #000 58%),
+              linear-gradient(100deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,.7) 34%, #000 60%);
+  mask-composite: intersect; }
+.signal-mast { position: relative; z-index: 2; width: 100%; max-width: var(--max); margin: 0 auto;
+  padding: clamp(24px, 4vw, 44px) var(--gutter) 0; display: flex; align-items: baseline; gap: 18px; }
+.signal-hero-inner { position: relative; z-index: 2; width: 100%; max-width: var(--max);
+  margin: auto auto 0; padding: 0 var(--gutter) clamp(40px, 6vw, 72px); }
+.signal-hero-copy { max-width: 26rem; }
+.signal-hero-copy .lede { margin-top: 16px; }
+.signal-hero-copy .row { margin-top: 28px; }
+@media (max-width: 860px) {
+  .signal-hero { min-height: auto; }
+  .signal-field { position: relative; height: 46svh; min-height: 260px; max-height: 420px;
+    -webkit-mask-image: none; mask-image: none; }
+  .signal-hero-inner { margin-top: 0; padding-top: clamp(18px, 4vw, 28px); padding-bottom: clamp(48px, 9vw, 72px); }
+  .signal-hero-copy { max-width: none; }
+}
+
+/* Status trace: the live rule. The block is the pointer target, not the canvas. */
+.trace { margin-top: 14px; padding: 10px 0; cursor: crosshair; }
+.trace canvas { display: block; width: 100%; height: 56px; }
+.trace--busy canvas { height: 24px; }
+
+/* Ordered process, 2 to 4 steps only (Intent, Signal, Text). Parallel items are rows. */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: clamp(28px, 4vw, 56px);
+  list-style: none; padding: 0; }
+.steps .title { margin-top: 14px; }
+.steps p { margin-top: 10px; font-size: .82rem; line-height: 1.65; }
+
+/* Dated list (the build log idiom; phone-first pages use it instead of a table). */
+.log-list { list-style: none; padding: 0; }
+.log-item { border-bottom: 1px solid var(--hair); }
+.log-item:last-child { border-bottom: 0; }
+.log-row { display: flex; align-items: baseline; gap: 16px; width: 100%; padding: 13px 0; background: none;
+  border: 0; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+.log-date { flex-shrink: 0; min-width: 88px; font: 400 11.5px/1.6 var(--pixel-sm); letter-spacing: .04em; color: var(--paper-soft); }
+.log-title { font-size: .84rem; color: var(--paper); transition: color .15s ease; }
+button.log-row:hover .log-title, button.log-row:focus-visible .log-title { color: var(--glow); }
+.log-toggle { margin-left: auto; font-family: var(--mono); color: var(--paper-mute); }
+.log-detail { padding: 0 0 17px calc(88px + 16px); max-width: 36rem; font-size: .8rem; line-height: 1.65; }
+.log-year { margin-top: 30px; font: 400 11px/1.6 var(--pixel-sm); letter-spacing: .16em; color: var(--paper-soft); }
+@media (max-width: 640px) {
+  .log-row { display: block; position: relative; padding-right: 28px; }
+  .log-date { display: block; margin-bottom: 3px; }
+  .log-toggle { position: absolute; right: 0; top: 12px; }
+  .log-detail { padding-left: 0; }
+}
+
+/* NOW line. The live dot pulses twice (4.8 s), then holds: WCAG 2.2.2. */
+.now { display: flex; align-items: baseline; gap: 12px; margin-top: 24px; }
+.now-label { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; font: 400 11px/1 var(--pixel-sm);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--glow); }
+.now-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--glow);
+  box-shadow: 0 0 10px var(--glow); animation: pulse 2.4s ease-in-out 2; }
+@keyframes pulse { 50% { opacity: .3; } }
+
+/* ---------- Tools: mast, verdict, readouts, regions ---------- */
+.mast { display: flex; align-items: baseline; gap: 16px; padding: 24px 0 32px; }
+.mast .meta { margin-left: auto; }
+.verdict { margin: 0; font-size: clamp(1.25rem, 2.4vw, 1.9rem); line-height: 1.15; max-width: 24em; }
+.verdict.fail { color: var(--fail); }
+.verdict + .meta { margin-top: 8px; }
+.readouts { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); column-gap: 24px; margin: 32px 0; }
+.readout { border-top: 1px solid var(--hair); padding-top: 16px; }
+.readout b { display: block; font: 400 28px/1 var(--pixel); color: var(--paper); }
+.readout b.live { font-family: var(--mono); font-weight: 400; }   /* numbers that update live use Mono */
+.readout span { display: block; margin-top: 8px; font: 500 11px/16px var(--mono); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--paper-mute); }
+.region { border-top: 1px solid var(--hair); padding: 24px 0 32px; }
+.region.fail { border-top-color: var(--fail); }
+.region-head { display: flex; align-items: baseline; gap: 12px; margin: 0 0 16px; font: 500 11px/16px var(--mono);
+  letter-spacing: .2em; text-transform: uppercase; color: var(--paper-mute); }
+.region-head .st { margin-left: auto; }
+.empty { margin: 0; padding: 16px 0; font: 400 13px/1.5 var(--sans); color: var(--paper-mute); }
+.empty.err { color: var(--fail); }
+
+/* ---------- Status: a dot plus a word, always both ----------
+   filled = the signal arrived; ring = an expected signal is missing.
+   Warm means act (fail now, warn soon). Cool means fine. */
+.st { white-space: nowrap; font: 500 11px/16px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.st::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%;
+  background: currentColor; vertical-align: 1px; }
+.st.ok { color: var(--paper-soft); }
+.st.fail, .st.stale { color: var(--fail); }
+.st.warn, .st.deferred { color: var(--warn); }
+.st.running { color: var(--glow); }
+.st.off { color: var(--paper-mute); }
+.st:is(.stale, .deferred, .off)::before { background: none; border: 1.5px solid currentColor; }
+.st.running::before { box-shadow: 0 0 10px var(--glow); animation: pulse 2.4s ease-in-out 2; }
+
+/* ---------- Tables ---------- */
+.tbl-wrap { margin: 0 -6px; padding: 0 6px; }   /* room for focus rings */
+.tbl { width: 100%; border-collapse: collapse; font: 400 13px/20px var(--sans); }
+.tbl th { position: sticky; top: 0; z-index: 1; background: var(--void); padding: 0 12px 8px; text-align: left;
+  vertical-align: bottom; white-space: nowrap; border-bottom: 1px solid var(--line);
+  font: 500 11px/16px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--paper-mute); }
+.tbl td { padding: 8px 12px; border-bottom: 1px solid var(--hair); vertical-align: baseline; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl :is(th, td):first-child { padding-left: 0; }
+.tbl :is(th, td):last-child { padding-right: 0; }
+.tbl td.t { color: var(--paper); }
+.tbl td.t a { color: inherit; text-decoration: none; }
+.tbl td.t a:hover { color: var(--glow); }
+.tbl :is(td.id, td.num, td.date) { font: 400 12px/20px var(--mono); white-space: nowrap; }
+.tbl td.date { color: var(--paper-mute); }
+.tbl .num { text-align: right; }
+.tbl td.sum { max-width: 48ch; }
+@media (max-width: 860px) { .tbl-wrap { overflow-x: auto; } .tbl .p3 { display: none; } }
+@media (max-width: 640px) { .tbl .p2 { display: none; } }
+@media (pointer: coarse) { .tbl td { padding-block: 12px; } }
+
+/* Dot-series charts (SomachSignal.drawDotSeries); size the canvas, the script fills it. */
+.spark { display: inline-block; width: 96px; height: 20px; vertical-align: -4px; }
+.chart { display: block; width: 100%; height: 120px; }
+
+/* ---------- Reading (mdview, generated records) ---------- */
+.prose { max-width: 32em; font: 400 16px/1.65 var(--sans); color: var(--paper-soft); }
+.prose > * + * { margin-top: 16px; }
+.prose h1 { font-size: 32px; line-height: 1.15; margin-bottom: 8px; }
+.prose h1.long { font: 600 28px/1.2 var(--sans); letter-spacing: -.01em; }   /* titles over 40 characters */
+.prose h2 { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--hair);
+  font: 600 20px/1.3 var(--sans); letter-spacing: -.01em; color: var(--paper); }
+.prose h3 { margin-top: 32px; font: 600 16px/1.35 var(--sans); color: var(--paper); }
+.prose :is(h4, h5, h6) { margin-top: 24px; font: 500 11px/16px var(--mono); letter-spacing: .2em;
+  text-transform: uppercase; color: var(--paper-mute); }
+.prose :is(ul, ol) { padding-left: 24px; }
+.prose li + li { margin-top: 4px; }
+.prose li::marker { color: var(--paper-mute); }
+.prose ol > li::marker { font: 400 12px var(--mono); }
+.prose blockquote { padding-left: 16px; border-left: 1px solid var(--line); }
+.prose :not(pre) > code { padding: 1px 4px; font-size: .875em; color: var(--paper); background: rgba(180, 200, 230, .07); }
+.prose pre { padding: 16px 0; overflow-x: auto; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair);
+  font: 400 13px/20px var(--mono); color: var(--paper); }
+.prose table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.prose th { padding: 0 12px 8px 0; text-align: left; border-bottom: 1px solid var(--line);
+  font: 500 11px/16px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--paper-mute); }
+.prose td { padding: 8px 12px 8px 0; border-bottom: 1px solid var(--hair); }
+.prose img { max-width: 100%; height: auto; }
+.prose .src { font: 400 11px/16px var(--mono); color: var(--paper-mute); word-break: break-all; }
+
+/* ---------- Motion and failure ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+/* Silence is the bug: kit.py's font check sets this attribute when a face fails to load. */
+html[data-fonts-missing]::before { content: "FONTS MISSING: " attr(data-fonts-missing); position: fixed; inset: 0 0 auto;
+  z-index: 2147483647; padding: 6px 12px; font: 12px/1.4 ui-monospace, monospace; color: var(--void); background: var(--fail); }
