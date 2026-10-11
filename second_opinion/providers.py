@@ -58,6 +58,10 @@ class ModelClient:
         for value in self.env.values():
             if value and len(value) >= 8:
                 text = text.replace(value, "<redacted>")
+                if value.startswith("http"):                    # also hide the bare host name
+                    host = value.split("//", 1)[-1].split("/", 1)[0]
+                    if host:
+                        text = text.replace(host, "<redacted-host>")
         return text[:300]
 
     def available(self, family: str) -> bool:

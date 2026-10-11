@@ -20,8 +20,8 @@ FAMILIES = ("google", "anthropic", "openai")
 KEY_ALIASES = {
     "TYPESAFE_API_KEY": ("TYPESAFE_API_KEY",),
     "GEMINI_API_KEY": ("GEMINI_API_KEY", "GOOGLE_API_KEY"),
-    "ANTHROPIC_API_KEY": ("ANTHROPIC_API_KEY", "ANTHROPIC_TMUC_API_KEY"),
-    "ANTHROPIC_WORKSPACE_ID": ("ANTHROPIC_WORKSPACE_ID", "ANTHROPIC_TMUC_WORKSPACE_ID"),
+    "ANTHROPIC_API_KEY": ("ANTHROPIC_API_KEY",),
+    "ANTHROPIC_WORKSPACE_ID": ("ANTHROPIC_WORKSPACE_ID",),
     "AZURE_OPENAI_API_KEY": ("AZURE_OPENAI_API_KEY",),
     "AZURE_OPENAI_BASE_URL": ("AZURE_OPENAI_BASE_URL",),
     "OPENAI_API_KEY": ("OPENAI_API_KEY",),
@@ -85,8 +85,15 @@ def load_env() -> dict[str, str]:
     extra = os.environ.get("SO_ENV_FILE")
     if extra:
         sources.append(_parse_env_file(Path(extra).expanduser()))
+    # SO_KEY_ALIASES="ANTHROPIC_API_KEY=MY_OTHER_NAME,..." lets a shared env file use its own names.
+    extra_aliases: dict[str, tuple[str, ...]] = {}
+    for pair in os.environ.get("SO_KEY_ALIASES", "").split(","):
+        canonical, _, other = pair.strip().partition("=")
+        if canonical in KEY_ALIASES and other:
+            extra_aliases[canonical] = extra_aliases.get(canonical, ()) + (other.strip(),)
     resolved: dict[str, str] = {}
-    for canonical, aliases in KEY_ALIASES.items():
+    for canonical, base in KEY_ALIASES.items():
+        aliases = base + extra_aliases.get(canonical, ())
         for src in sources:
             hit = next((src[a] for a in aliases if src.get(a)), None)
             if hit:
